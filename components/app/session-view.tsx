@@ -66,7 +66,7 @@ export const SessionView = ({
 }: React.ComponentProps<'section'> & SessionViewProps) => {
   const session = useSessionContext();
   const { messages } = useSessionMessages(session);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const controls: ControlBarControls = {
@@ -87,26 +87,32 @@ export const SessionView = ({
   }, [messages]);
 
   return (
-    <section className="bg-background relative z-10 h-full w-full overflow-hidden" {...props}>
-      {/* Chat Transcript */}
-      <div
-        className={cn(
-          'fixed inset-0 grid grid-cols-1 grid-rows-1',
-          !chatOpen && 'pointer-events-none'
-        )}
-      >
-        <Fade top className="absolute inset-x-4 top-0 h-40" />
-        <ScrollArea ref={scrollAreaRef} className="px-4 pt-40 pb-[150px] md:px-6 md:pb-[200px]">
-          <ChatTranscript
-            hidden={!chatOpen}
-            messages={messages}
-            className="mx-auto max-w-2xl space-y-3 transition-opacity duration-300 ease-out"
-          />
-        </ScrollArea>
+    <section
+      className="bg-background relative z-10 flex h-full w-full flex-col overflow-hidden md:flex-row"
+      {...props}
+    >
+      <div className="relative flex-1 h-full min-h-0">
+        <TileLayout chatOpen={chatOpen} />
       </div>
 
-      {/* Tile Layout */}
-      <TileLayout chatOpen={chatOpen} />
+      <div
+        className={cn(
+          'bg-background/50 relative z-40 flex h-1/2 flex-col border-t border-input/20 transition-all duration-300 ease-in-out md:h-full md:w-[400px] md:border-t-0 md:border-l',
+          !chatOpen && 'h-0 md:w-0 border-none'
+        )}
+      >
+        <div className="relative flex-1 min-h-0">
+          <Fade top className="absolute inset-x-0 top-0 z-10 h-20" />
+          <ScrollArea ref={scrollAreaRef} className="h-full px-4 pt-12 pb-32 md:px-6">
+            <ChatTranscript
+              hidden={!chatOpen}
+              messages={messages}
+              className="mx-auto max-w-2xl space-y-3"
+            />
+          </ScrollArea>
+          <Fade bottom className="absolute inset-x-0 bottom-0 z-10 h-20" />
+        </div>
+      </div>
 
       {/* Bottom */}
       <MotionBottom
