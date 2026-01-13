@@ -109,7 +109,7 @@ export function TileLayout({ chatOpen }: TileLayoutProps) {
                   }}
                   animate={{
                     opacity: 1,
-                    scale: chatOpen ? 1 : 5,
+                    scale: 1,
                   }}
                   transition={{
                     ...ANIMATION_TRANSITION,
