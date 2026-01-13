@@ -10,6 +10,14 @@ from typing import Optional
 from analysis import perform_full_analysis, get_quick_analysis
 
 
+import json
+
+_room = None
+
+def set_room(room):
+    global _room
+    _room = room
+
 @function_tool()
 async def analyze_trading_pair(
     context: RunContext,
@@ -49,39 +57,54 @@ async def analyze_trading_pair(
         # Build concise response for AI to speak
         direction = verdict.get("direction", "NEUTRAL")
         confidence = verdict.get("confidence", 0)
-        quality = verdict.get("quality_score", 0)
         
         # Get key indicator values
         rsi = indicators.get("momentum", {}).get("rsi", {})
         macd = indicators.get("trend", {}).get("macd", {})
         adx = indicators.get("trend", {}).get("adx", {})
         
-        response = f"""Analysis complete for {result.get('symbol', symbol)} on {timeframe} timeframe.
+        # Publish structured data to the room for frontend
+        if _room:
+            try:
+                # Format data for frontend parsing in AnalysisProgress
+                frontend_data = {
+                    "price": f"${market.get('current_price', 0):.5f}",
+                    "change": f"{market.get('change_24h_pct', 0):+.2f}%",
+                    "candles": 300,
+                    "rsi": { 
+                        "value": rsi.get('value', 50), 
+                        "signal": rsi.get('signal', 'NEUTRAL') 
+                    },
+                    "macd": { "signal": macd.get('signal', 'NEUTRAL') },
+                    "adx": { "value": adx.get('value', 25) },
+                    "upSignals": aggregation.get('up_signals', 0),
+                    "downSignals": aggregation.get('down_signals', 0),
+                    "upScore": aggregation.get('up_score', 0),
+                    "downScore": aggregation.get('down_score', 0),
+                    "verdict": direction,
+                    "confidence": confidence,
+                    "entry": targets.get('entry_display', 'N/A'),
+                    "target": targets.get('target_display', 'N/A'),
+                    "stop": targets.get('stop_loss', 'N/A')
+                }
+                
+                payload = json.dumps({
+                    "topic": "analysis_data", 
+                    "data": frontend_data,
+                    "symbol": symbol,
+                    "timeframe": timeframe
+                })
+                
+                await _room.local_participant.publish_data(payload, topic="analysis_data", reliable=True)
+                logging.info("Published analysis data to room")
+            except Exception as e:
+                logging.error(f"Failed to publish data: {e}")
 
-MARKET DATA:
-Current Price: ${market.get('current_price', 0):.5f}
-24h Change: {market.get('change_24h_pct', 0):+.2f}%
-
-KEY INDICATORS:
-RSI: {rsi.get('value', 50):.1f} ({rsi.get('signal', 'NEUTRAL')})
-MACD: {macd.get('signal', 'NEUTRAL')}
-ADX: {adx.get('value', 25):.1f} ({adx.get('trend_strength', 'Weak')} trend)
-
-SIGNAL SUMMARY:
-UP signals: {aggregation.get('up_signals', 0)} (score: {aggregation.get('up_score', 0):.0f})
-DOWN signals: {aggregation.get('down_signals', 0)} (score: {aggregation.get('down_score', 0):.0f})
-
-FINAL VERDICT: {direction}
-Confidence: {confidence}%
-Quality Score: {quality:.0f}%
-
-TRADE TARGETS:
+        response = f"""Analysis complete for {symbol}. Verdict: {direction} ({confidence}% confidence).
+See full results in the display above.
 Entry: {targets.get('entry_display', 'N/A')}
 Target: {targets.get('target_display', 'N/A')}
-Stop Loss: {targets.get('stop_loss', 'N/A')}
-Risk/Reward: {targets.get('risk_reward', 'N/A')}:1
-
-Remember: This is AI analysis, not financial advice. Always do your own research."""
+Stop: {targets.get('stop_loss', 'N/A')}"""
 
         return response
         

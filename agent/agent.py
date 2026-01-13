@@ -54,12 +54,16 @@ async def entrypoint(ctx: agents.JobContext):
     Entry point for the CryptoMind AI agent.
     """
     session = AgentSession()
+    
+    # Provide access to the room for tools to send data packets
+    from tools import set_room
+    set_room(ctx.room)
 
     await session.start(
         room=ctx.room,
         agent=CryptoMindAssistant(),
         room_input_options=RoomInputOptions(
-            video_enabled=True,
+            video_enabled=False,
             noise_cancellation=noise_cancellation.BVC(),
         ),
     )

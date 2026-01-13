@@ -116,21 +116,21 @@ export function TileLayout({ chatOpen }: TileLayoutProps) {
                     delay: animationDelay,
                   }}
                   className={cn(
-                    'glass border border-primary/20 aspect-square h-[100px] rounded-full flex items-center justify-center shadow-2xl transition-all duration-300'
+                    'glass border border-primary/20 aspect-square h-[80px] rounded-full flex items-center justify-center shadow-2xl transition-all duration-300 backdrop-blur-md bg-background/50'
                   )}
                 >
                   <BarVisualizer
-                    barCount={9}
+                    barCount={5}
                     state={agentState}
-                    options={{ minHeight: 6 }}
+                    options={{ minHeight: 8, maxHeight: 32 }}
                     trackRef={agentAudioTrack}
-                    className={cn('flex h-full items-center justify-center gap-1')}
+                    className={cn('flex h-full items-center justify-center gap-1.5')}
                   >
                     <span
                       className={cn([
-                        'bg-primary/40 min-h-[6px] w-[6px] rounded-full',
-                        'origin-center transition-all duration-300 ease-out',
-                        'data-[lk-highlighted=true]:bg-primary data-[lk-highlighted=true]:scale-150 data-[lk-muted=true]:bg-muted/30',
+                        'bg-primary/80 h-2 w-1.5 rounded-full',
+                        'origin-center transition-all duration-150 ease-out',
+                        'data-[lk-highlighted=true]:bg-primary data-[lk-highlighted=true]:scale-y-[2.5] data-[lk-muted=true]:bg-muted/20',
                       ])}
                     />
                   </BarVisualizer>
