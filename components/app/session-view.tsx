@@ -88,47 +88,61 @@ export const SessionView = ({
 
   return (
     <section
-      className="bg-background relative z-10 flex h-full w-full flex-col overflow-hidden md:flex-row"
+      className="bg-background relative z-10 flex h-full w-full flex-col overflow-hidden items-center pt-8 md:pt-12"
       {...props}
     >
-      <div className="relative flex-1 h-full min-h-0">
+      {/* Top: Visualizer */}
+      <div className="w-full max-w-4xl z-20">
         <TileLayout chatOpen={chatOpen} />
       </div>
 
+      {/* Middle: Centered Chat Box */}
       <div
         className={cn(
-          'bg-background/50 relative z-40 flex h-1/2 flex-col border-t border-input/20 transition-all duration-300 ease-in-out md:h-full md:w-[400px] md:border-t-0 md:border-l',
-          !chatOpen && 'h-0 md:w-0 border-none'
+          'glass relative z-40 flex flex-col transition-all duration-500 ease-in-out w-full max-w-2xl flex-1 min-h-0 mb-[140px] rounded-2xl border border-border/30 overflow-hidden shadow-2xl',
+          !chatOpen && 'opacity-0 translate-y-4 pointer-events-none'
         )}
       >
-        <div className="relative flex-1 min-h-0">
-          <Fade top className="absolute inset-x-0 top-0 z-10 h-20" />
-          <ScrollArea ref={scrollAreaRef} className="h-full px-4 pt-12 pb-32 md:px-6">
-            <ChatTranscript
-              hidden={!chatOpen}
-              messages={messages}
-              className="mx-auto max-w-2xl space-y-3"
-            />
-          </ScrollArea>
-          <Fade bottom className="absolute inset-x-0 bottom-0 z-10 h-20" />
+        <div className="relative flex-1 min-h-0 flex flex-col">
+          <div className="border-b border-border/50 px-6 py-4 flex items-center justify-between bg-background/20 backdrop-blur-sm">
+            <span className="text-[10px] uppercase tracking-[0.2em] font-mono text-primary font-bold">
+              Terminal Output
+            </span>
+            <div className="flex gap-1.5">
+              <div className="size-2 rounded-full bg-red-500/30" />
+              <div className="size-2 rounded-full bg-yellow-500/30" />
+              <div className="size-2 rounded-full bg-green-500/30" />
+            </div>
+          </div>
+          <div className="flex-1 min-h-0 relative">
+            <Fade top className="absolute inset-x-0 top-0 z-10 h-12" />
+            <ScrollArea ref={scrollAreaRef} className="h-full px-4 pt-4 pb-12 md:px-8 scrollbar-hide">
+              <ChatTranscript
+                hidden={!chatOpen}
+                messages={messages}
+                className="space-y-6"
+              />
+            </ScrollArea>
+            <Fade bottom className="absolute inset-x-0 bottom-0 z-10 h-12" />
+          </div>
         </div>
       </div>
 
-      {/* Bottom */}
+      {/* Bottom: Centered Controls */}
       <MotionBottom
         {...BOTTOM_VIEW_MOTION_PROPS}
-        className="fixed inset-x-3 bottom-0 z-50 md:inset-x-12"
+        className="fixed inset-x-0 bottom-0 z-50 flex justify-center pb-8 md:pb-12 px-4"
       >
-        {appConfig.isPreConnectBufferEnabled && (
-          <PreConnectMessage messages={messages} className="pb-4" />
-        )}
-        <div className="bg-background relative mx-auto max-w-2xl pb-3 md:pb-12">
-          <Fade bottom className="absolute inset-x-0 top-0 h-4 -translate-y-full" />
+        <div className="w-full max-w-2xl">
+          {appConfig.isPreConnectBufferEnabled && (
+            <PreConnectMessage messages={messages} className="pb-4" />
+          )}
           <AgentControlBar
             controls={controls}
             isConnected={session.isConnected}
             onDisconnect={session.end}
             onChatOpenChange={setChatOpen}
+            className="shadow-2xl border border-border/50 bg-background/80 backdrop-blur-md"
           />
         </div>
       </MotionBottom>

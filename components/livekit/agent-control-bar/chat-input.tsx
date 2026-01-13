@@ -32,7 +32,7 @@ interface ChatInputProps {
 export function ChatInput({
   chatOpen,
   isAgentAvailable = false,
-  onSend = async () => {},
+  onSend = async () => { },
 }: ChatInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSending, setIsSending] = useState(false);
@@ -65,11 +65,11 @@ export function ChatInput({
       inert={!chatOpen}
       {...MOTION_PROPS}
       animate={chatOpen ? 'visible' : 'hidden'}
-      className="border-input/50 flex w-full items-start overflow-hidden border-b"
+      className="flex w-full items-start overflow-hidden border-t border-border/30 pt-3"
     >
       <form
         onSubmit={handleSubmit}
-        className="mb-3 flex grow items-end gap-2 rounded-md pl-1 text-sm"
+        className="mb-3 flex grow items-center gap-3 rounded-xl bg-background/50 px-4 py-2 border border-border/50 focus-within:border-primary/50 transition-colors"
       >
         <input
           autoFocus
@@ -77,9 +77,9 @@ export function ChatInput({
           type="text"
           value={message}
           disabled={!chatOpen}
-          placeholder="Type something..."
+          placeholder="SEND COMMAND..."
           onChange={(e) => setMessage(e.target.value)}
-          className="h-8 flex-1 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-8 flex-1 bg-transparent font-mono text-xs uppercase tracking-wider focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
         />
         <Button
           size="icon"
@@ -87,7 +87,7 @@ export function ChatInput({
           disabled={isDisabled}
           variant={isDisabled ? 'secondary' : 'primary'}
           title={isSending ? 'Sending...' : 'Send'}
-          className="self-start"
+          className="size-8 rounded-lg neon-glow"
         >
           {isSending ? (
             <SpinnerIcon className="animate-spin" weight="bold" />

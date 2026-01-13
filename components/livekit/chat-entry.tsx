@@ -26,36 +26,37 @@ export const ChatEntry = ({
   className,
   ...props
 }: ChatEntryProps) => {
-  const time = new Date(timestamp);
-  const title = time.toLocaleTimeString(locale, { timeStyle: 'full' });
+  const time = new Date(timestamp).toLocaleTimeString(locale, { timeStyle: 'short' });
+  const title = new Date(timestamp).toLocaleTimeString(locale, { timeStyle: 'full' });
+  const isLocal = messageOrigin === 'local';
 
   return (
     <li
       title={title}
       data-lk-message-origin={messageOrigin}
-      className={cn('group flex w-full flex-col gap-0.5', className)}
+      className={cn(
+        'flex flex-col gap-1.5 transition-all duration-300',
+        isLocal ? 'items-end text-right' : 'items-start text-left',
+        className
+      )}
       {...props}
     >
-      <header
-        className={cn(
-          'text-muted-foreground flex items-center gap-2 text-sm',
-          messageOrigin === 'local' ? 'flex-row-reverse' : 'text-left'
-        )}
-      >
-        {name && <strong>{name}</strong>}
-        <span className="font-mono text-xs opacity-0 transition-opacity ease-linear group-hover:opacity-100">
-          {hasBeenEdited && '*'}
-          {time.toLocaleTimeString(locale, { timeStyle: 'short' })}
+      <div className="flex items-center gap-2 opacity-40">
+        <span className="font-mono text-[10px] uppercase tracking-widest">
+          {isLocal ? 'USER_INPUT' : 'AGENT_RESPONSE'}
         </span>
-      </header>
-      <span
+        <span className="font-mono text-[10px]">{time}</span>
+      </div>
+      <div
         className={cn(
-          'max-w-4/5 rounded-[20px]',
-          messageOrigin === 'local' ? 'bg-muted ml-auto p-2' : 'mr-auto'
+          'max-w-[85%] rounded-xl px-4 py-3 font-mono text-sm leading-relaxed shadow-sm transition-all',
+          isLocal
+            ? 'bg-primary/10 text-primary border border-primary/20'
+            : 'bg-foreground/5 text-foreground border border-border/30'
         )}
       >
         {message}
-      </span>
-    </li>
+      </div>
+    </li >
   );
 };
