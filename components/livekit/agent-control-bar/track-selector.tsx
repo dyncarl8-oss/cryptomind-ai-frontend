@@ -48,13 +48,13 @@ export function TrackSelector({
         onPressedChange={onPressedChange}
         className={cn(
           'peer/track group/track transition-all duration-300',
-          minimal ? 'h-9 w-14 rounded-full px-0' : 'min-w-9 has-[.audiovisualizer]:w-auto has-[.audiovisualizer]:px-3 has-[~_button]:rounded-r-none has-[~_button]:pr-2 has-[~_button]:pl-3'
+          minimal ? 'h-9 w-14 rounded-full px-0 pl-1' : 'min-w-9 has-[.audiovisualizer]:w-auto has-[.audiovisualizer]:px-3 has-[~_button]:rounded-r-none has-[~_button]:pr-2 has-[~_button]:pl-3'
         )}
       >
         {audioTrackRef && (
           <div className={cn(
             "flex items-center justify-center transition-all duration-300 mx-auto",
-            minimal ? "w-12 h-6 pl-1" : "audiovisualizer"
+            minimal ? "w-12 h-6 pl-0" : "audiovisualizer"
           )}>
             <BarVisualizer
               barCount={3}

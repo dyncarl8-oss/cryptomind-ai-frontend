@@ -83,14 +83,18 @@ export function TrackDeviceSelect({
         onFocus={() => setRequestPermissionsState(true)}
         className={cn(
           selectVariants({ uiSize }),
-          'appearance-none pr-8 focus:outline-none cursor-pointer',
+          'appearance-none pr-8 focus:outline-none cursor-pointer bg-background text-foreground',
           minimal && 'absolute inset-0 w-full h-full opacity-0 z-20 pr-0', // Transparent overlay in minimal mode
           !hasMultipleDevices && 'cursor-default',
           props.className
         )}
       >
         {filteredDevices.map((device) => (
-          <option key={device.deviceId} value={device.deviceId}>
+          <option
+            key={device.deviceId}
+            value={device.deviceId}
+            className="bg-zinc-900 text-white"
+          >
             {device.label || `Device ${device.deviceId.slice(0, 4)}`}
           </option>
         ))}
