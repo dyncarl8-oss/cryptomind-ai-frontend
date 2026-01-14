@@ -138,13 +138,48 @@ function ExpandableStep({
                                 </>
                             )}
                             {step.id === 'verdict' && step.data && (
-                                <>
-                                    <div className="flex justify-between"><span>Direction:</span><span className={step.data.verdict === 'UP' ? 'text-green-400' : step.data.verdict === 'DOWN' ? 'text-red-400' : 'text-yellow-400'}>{step.data.verdict}</span></div>
-                                    <div className="flex justify-between"><span>Confidence:</span><span className="text-foreground">{step.data.confidence}%</span></div>
-                                    {step.data.entry && <div className="flex justify-between"><span>Entry:</span><span className="text-foreground">{step.data.entry}</span></div>}
-                                    {step.data.target && <div className="flex justify-between"><span>Target:</span><span className="text-foreground">{step.data.target}</span></div>}
-                                    {step.data.stop && <div className="flex justify-between"><span>Stop:</span><span className="text-foreground">{step.data.stop}</span></div>}
-                                </>
+                                <div className="space-y-3 pt-1">
+                                    <div className={cn(
+                                        "flex flex-col items-center justify-center py-3 px-4 rounded-lg border mb-2",
+                                        step.data.verdict === 'UP' ? "bg-green-500/10 border-green-500/30 text-green-400" :
+                                            step.data.verdict === 'DOWN' ? "bg-red-500/10 border-red-500/30 text-red-400" :
+                                                "bg-yellow-500/10 border-yellow-500/30 text-yellow-400"
+                                    )}>
+                                        <span className="text-[10px] uppercase tracking-widest opacity-70 mb-1">Final Verdict</span>
+                                        <span className="text-2xl font-bold tracking-tighter leading-none">{step.data.verdict}</span>
+                                        <span className="text-[10px] mt-1 opacity-80">{step.data.confidence}% Confidence</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2 pt-1 border-t border-border/20">
+                                        {step.data.entry && (
+                                            <div className="flex justify-between items-center group">
+                                                <span className="flex items-center gap-2 text-xs opacity-70">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+                                                    Entry Zone
+                                                </span>
+                                                <span className="text-base font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-md border border-green-500/20 font-mono tracking-tight shadow-sm">{step.data.entry}</span>
+                                            </div>
+                                        )}
+                                        {step.data.target && (
+                                            <div className="flex justify-between items-center group">
+                                                <span className="flex items-center gap-2 text-xs opacity-70">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.5)]" />
+                                                    Target Zone
+                                                </span>
+                                                <span className="text-base font-bold text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-md border border-cyan-400/20 font-mono tracking-tight shadow-sm">{step.data.target}</span>
+                                            </div>
+                                        )}
+                                        {step.data.stop && (
+                                            <div className="flex justify-between items-center group">
+                                                <span className="flex items-center gap-2 text-xs opacity-70">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                                    Stop Loss
+                                                </span>
+                                                <span className="text-base font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-md border border-red-500/20 font-mono tracking-tight shadow-sm">{step.data.stop}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             )}
                         </div>
                     </motion.div>
@@ -174,6 +209,7 @@ export function AnalysisProgress({ symbol, timeframe, isActive, finalData, class
                 status: 'complete',
                 data: finalData
             })));
+            setExpandedStep('verdict'); // Auto-expand verdict
             return;
         }
 
@@ -205,6 +241,11 @@ export function AnalysisProgress({ symbol, timeframe, isActive, finalData, class
                     }
                     return s;
                 }));
+
+                // Auto-expand verdict when complete
+                if (currentStepIdx === 3) {
+                    setExpandedStep('verdict');
+                }
 
                 currentStepIdx++;
 

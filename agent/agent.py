@@ -63,7 +63,7 @@ async def entrypoint(ctx: agents.JobContext):
         room=ctx.room,
         agent=CryptoMindAssistant(),
         room_input_options=RoomInputOptions(
-            video_enabled=False,
+            video_enabled=True,
             noise_cancellation=noise_cancellation.BVC(),
         ),
     )

@@ -41,6 +41,20 @@ async def analyze_trading_pair(
     try:
         logging.info(f"Starting analysis for {symbol} on {timeframe} timeframe")
         
+        # Signal the UI that we are starting
+        if _room:
+            try:
+                start_payload = json.dumps({
+                    "topic": "analysis_status",
+                    "status": "started",
+                    "symbol": symbol,
+                    "timeframe": timeframe
+                })
+                await _room.local_participant.publish_data(start_payload, topic="analysis_status", reliable=True)
+                logging.info(f"Sent analysis_started signal for {symbol}")
+            except Exception as e:
+                logging.error(f"Failed to send start signal: {e}")
+
         # Perform the full analysis
         result = await perform_full_analysis(symbol, timeframe)
         
